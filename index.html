@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Certificate Verification Portal - DNC Edutronics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 50%, #5c6bc0 100%);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: clamp(10px, 3vw, 30px);
+        }
+
+        .container {
+            background: white;
+            border-radius: clamp(12px, 3vw, 20px);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+            padding: clamp(25px, 6vw, 50px);
+            max-width: min(550px, 92vw);
+            width: 100%;
+            text-align: center;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+        }
+
+        .logo {
+            width: clamp(60px, 18vw, 90px);
+            height: clamp(60px, 18vw, 90px);
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+            border-radius: 50%;
+            margin: 0 auto clamp(15px, 4vw, 25px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(28px, 8vw, 40px);
+            color: white;
+            box-shadow: 0 8px 20px rgba(26, 35, 126, 0.3);
+            flex-shrink: 0;
+        }
+
+        h1 {
+            color: #1a237e;
+            margin-bottom: clamp(4px, 1.5vw, 8px);
+            font-size: clamp(20px, 5.5vw, 26px);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: clamp(20px, 5vw, 35px);
+            font-size: clamp(12px, 3.5vw, 14px);
+            line-height: 1.4;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: clamp(15px, 4vw, 25px);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: clamp(12px, 3.5vw, 16px) clamp(14px, 4vw, 20px);
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: clamp(14px, 4vw, 16px);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #3949ab;
+            box-shadow: 0 0 0 4px rgba(57, 73, 171, 0.1);
+        }
+
+        .verify-btn {
+            width: 100%;
+            padding: clamp(14px, 4vw, 16px);
+            background: linear-gradient(135deg, #1a237e 0%, #3949ab 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: clamp(14px, 4vw, 16px);
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .verify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(26, 35, 126, 0.4);
+        }
+
+        .verify-btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: clamp(20px, 5vw, 30px);
+            padding: clamp(18px, 5vw, 30px);
+            border-radius: 16px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result.success {
+            display: block;
+            background: #e8f5e9;
+            border: 2px solid #a5d6a7;
+            color: #1b5e20;
+        }
+
+        .result.error {
+            display: block;
+            background: #ffebee;
+            border: 2px solid #ef9a9a;
+            color: #b71c1c;
+        }
+
+        .result-icon {
+            font-size: clamp(40px, 12vw, 56px);
+            margin-bottom: clamp(8px, 2.5vw, 12px);
+        }
+
+        .result h2 {
+            font-size: clamp(18px, 5vw, 22px);
+            margin-bottom: clamp(6px, 2vw, 10px);
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .result p {
+            font-size: clamp(13px, 3.8vw, 14px);
+            line-height: 1.6;
+            margin-bottom: 5px;
+        }
+
+        .details {
+            margin-top: clamp(14px, 4vw, 20px);
+            padding-top: clamp(14px, 4vw, 20px);
+            border-top: 1px solid rgba(0,0,0,0.1);
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: clamp(8px, 2.5vw, 10px);
+            font-size: clamp(13px, 3.8vw, 14px);
+            gap: 10px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .detail-row span:last-child {
+            text-align: right;
+            word-break: break-word;
+        }
+
+        .download-section {
+            margin-top: clamp(18px, 5vw, 25px);
+            padding-top: clamp(14px, 4vw, 20px);
+            border-top: 2px dashed rgba(26, 35, 126, 0.2);
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(6px, 2vw, 10px);
+            padding: clamp(12px, 3.5vw, 14px) clamp(20px, 6vw, 28px);
+            background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: clamp(14px, 4vw, 16px);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+            width: 100%;
+            max-width: 300px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(46, 125, 50, 0.4);
+        }
+
+        .download-btn svg {
+            width: clamp(16px, 5vw, 20px);
+            height: clamp(16px, 5vw, 20px);
+            flex-shrink: 0;
+            fill: currentColor;
+        }
+
+        .download-hint {
+            margin-top: clamp(8px, 2.5vw, 10px);
+            font-size: clamp(11px, 3.2vw, 12px);
+            color: #666;
+            font-style: italic;
+        }
+
+        .footer {
+            margin-top: clamp(20px, 5vw, 30px);
+            color: #aaa;
+            font-size: clamp(10px, 3vw, 12px);
+            line-height: 1.4;
+        }
+
+        .loading {
+            display: none;
+            margin-top: clamp(14px, 4vw, 20px);
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: clamp(35px, 10vw, 45px);
+            height: clamp(35px, 10vw, 45px);
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3949ab;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Small phones */
+        @media (max-width: 360px) {
+            .container {
+                padding: 20px 15px;
+            }
+            .detail-row {
+                flex-direction: column;
+                gap: 2px;
+            }
+            .detail-row span:last-child {
+                text-align: left;
+            }
+        }
+
+        /* Tablets */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 600px;
+            }
+        }
+
+        /* Large screens */
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 550px;
+            }
+        }
+
+        /* Landscape phones */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+            .container {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">✓</div>
+        <h1>Certificate Verification</h1>
+        <p class="subtitle">DNC Edutronics Institute, Pathankot</p>
+
+        <div class="input-group">
+            <input type="text" id="serialInput" placeholder="ENTER SERIAL NUMBER" autocomplete="off">
+        </div>
+
+        <button class="verify-btn" onclick="verifyCertificate()">Verify Certificate</button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 12px; color: #888; font-size: clamp(12px, 3.5vw, 14px);">Verifying certificate...</p>
+        </div>
+
+        <div class="result" id="result">
+            <div class="result-icon" id="resultIcon"></div>
+            <h2 id="resultTitle"></h2>
+            <p id="resultMessage"></p>
+            <div class="details" id="details"></div>
+            <div class="download-section" id="downloadSection" style="display: none;">
+                <a href="#" class="download-btn" id="downloadLink" download>
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                    </svg>
+                    Download Certificate
+                </a>
+                <p class="download-hint">Click to download your official certificate PDF</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            Secure Verification System &copy; 2026 | DNC Edutronics
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // VALID CERTIFICATES DATABASE
+        // ============================================
+        const validCertificates = {
+            "CERT/2026/RS/69": {
+                name: "Raj Kumar",
+                course: "AUTOCAD",
+                duration: "2 Months",
+                date: "30 May 2026",
+                issuer: "DNC Edutronics Institution",
+                pdfFile: "raj-kumar-certificate.pdf"
+            },
+            "CERT/2026/RS/70": {
+                name: "Archit Guleria",
+                course: "AUTOCAD",
+                duration: "2 Months",
+                date: "30 May 2026",
+                issuer: "DNC Edutronics Institution",
+                pdfFile: "archit-guleria-certificate.pdf"
+            },
+            "CERT/2026/RS/71": {
+                name: "Sugandhi Khajuria",
+                course: "AUTOCAD",
+                duration: "2 Months",
+                date: "30 May 2026",
+                issuer: "DNC Edutronics Institution",
+                pdfFile: "sugandhi-khajuria-certificate.pdf"
+            },
+            "CERT/2026/RS/72": {
+                name: "Harmandeep Singh Bains",
+                course: "AUTOCAD",
+                duration: "2 Months",
+                date: "30 May 2026",
+                issuer: "DNC Edutronics Institution",
+                pdfFile: "harman-bains-certificate.pdf"
+            },
+            "CERT/2026/RS/73": {
+                name: "Kashish",
+                course: "AUTOCAD",
+                duration: "2 Months",
+                date: "30 May 2026",
+                issuer: "DNC Edutronics Institution",
+                pdfFile: "kashish-certificate.pdf"
+            }
+        };
+
+        const serialInput = document.getElementById('serialInput');
+        const result = document.getElementById('result');
+        const loading = document.getElementById('loading');
+        const downloadSection = document.getElementById('downloadSection');
+        const downloadLink = document.getElementById('downloadLink');
+
+        serialInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') verifyCertificate();
+        });
+
+        function verifyCertificate() {
+            const serial = serialInput.value.trim().toUpperCase();
+
+            if (!serial) {
+                showResult('error', '⚠️', 'Input Required', 'Please enter a certificate serial number.');
+                downloadSection.style.display = 'none';
+                return;
+            }
+
+            // Show loading
+            result.className = 'result';
+            loading.classList.add('active');
+            downloadSection.style.display = 'none';
+
+            // Simulate verification delay (1.5 seconds)
+            setTimeout(() => {
+                loading.classList.remove('active');
+
+                const cert = validCertificates[serial];
+
+                if (cert) {
+                    showResult('success', '✅', 'Certificate Verified', 
+                        'This certificate has been verified as authentic and issued by DNC Edutronics Institution.');
+
+                    document.getElementById('details').innerHTML = `
+                        <div class="detail-row">
+                            <span class="detail-label">Recipient:</span>
+                            <span>${cert.name}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Course/Program:</span>
+                            <span>${cert.course}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Duration:</span>
+                            <span>${cert.duration}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Issue Date:</span>
+                            <span>${cert.date}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Serial Number:</span>
+                            <span>${serial}</span>
+                        </div>
+                    `;
+
+                    // Setup download link
+                    downloadLink.href = cert.pdfFile;
+                    downloadLink.download = cert.pdfFile;
+                    downloadSection.style.display = 'block';
+
+                } else {
+                    showResult('error', '❌', 'Invalid Certificate', 
+                        'The serial number you entered could not be found in our database. Please check the number and try again, or contact support if you believe this is an error.');
+                    document.getElementById('details').innerHTML = '';
+                    downloadSection.style.display = 'none';
+                }
+            }, 1500);
+        }
+
+        function showResult(type, icon, title, message) {
+            result.className = 'result ' + type;
+            document.getElementById('resultIcon').textContent = icon;
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultMessage').textContent = message;
+        }
+    </script>
+</body>
+</html>
